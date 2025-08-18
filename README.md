@@ -23,8 +23,8 @@ A modern, responsive web application for exploring Polymarket's most active pred
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/polymarket-viewer.git
-cd polymarket-viewer
+git clone https://github.com/StephenForte/polymarket.git
+cd polymarket
 
 # Start the development server
 python3 -m http.server 8000
@@ -37,8 +37,8 @@ open http://localhost:8000
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/polymarket-viewer.git
-cd polymarket-viewer
+git clone https://github.com/StephenForte/polymarket.git
+cd polymarket
 
 # Install dependencies
 npm install
@@ -54,15 +54,15 @@ open http://localhost:3000
 
 ```bash
 # Clone and run the setup script
-git clone https://github.com/yourusername/polymarket-viewer.git
-cd polymarket-viewer
+git clone https://github.com/StephenForte/polymarket.git
+cd polymarket
 ./setup.sh
 ```
 
 ## 📁 Project Structure
 
 ```
-polymarket-viewer/
+polymarket/
 ├── index.html              # Main application page
 ├── index-proxy.html        # Proxy server version
 ├── script.js               # Main JavaScript (external proxy)
@@ -105,8 +105,8 @@ For detailed information, see [CORS_SOLUTIONS.md](CORS_SOLUTIONS.md).
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/polymarket-viewer.git
-   cd polymarket-viewer
+   git clone https://github.com/StephenForte/polymarket.git
+   cd polymarket
    ```
 
 2. **Install dependencies**
