@@ -286,13 +286,13 @@ class PolymarketViewer {
 
     displayMarkets() {
         const container = document.getElementById('marketsGrid');
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        const pageMarkets = this.filteredMarkets.slice(startIndex, endIndex);
+        
+        console.log('displayMarkets called - filteredMarkets length:', this.filteredMarkets.length);
+        console.log('displayMarkets - filteredMarkets:', this.filteredMarkets);
 
         container.innerHTML = '';
 
-        if (pageMarkets.length === 0) {
+        if (this.filteredMarkets.length === 0) {
             container.innerHTML = `
                 <div class="col-12 text-center py-5">
                     <i class="fas fa-search fa-3x text-muted mb-3"></i>
@@ -303,7 +303,7 @@ class PolymarketViewer {
             return;
         }
 
-        pageMarkets.forEach(market => {
+        this.filteredMarkets.forEach(market => {
             const card = this.createMarketCard(market);
             container.appendChild(card);
         });
@@ -487,9 +487,22 @@ class PolymarketViewer {
     }
 
     updateCurrentPage() {
+        console.log('updateCurrentPage called - currentPage:', this.currentPage);
+        console.log('allFilteredMarkets length:', this.allFilteredMarkets ? this.allFilteredMarkets.length : 'undefined');
+        console.log('allFilteredMarkets:', this.allFilteredMarkets);
+        
         // Get current page of results from allFilteredMarkets
         const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        console.log('startIndex:', startIndex, 'itemsPerPage:', this.itemsPerPage);
+        
+        if (!this.allFilteredMarkets || this.allFilteredMarkets.length === 0) {
+            console.error('allFilteredMarkets is empty or undefined!');
+            return;
+        }
+        
         this.filteredMarkets = this.allFilteredMarkets.slice(startIndex, startIndex + this.itemsPerPage);
+        console.log('filteredMarkets length after slice:', this.filteredMarkets.length);
+        console.log('filteredMarkets:', this.filteredMarkets);
         
         this.displayMarkets();
         this.updateStats();
