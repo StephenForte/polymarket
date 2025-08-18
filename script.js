@@ -80,9 +80,15 @@ class PolymarketViewer {
             
             const data = await response.json();
             console.log('Received data:', data);
+            console.log('Data type:', typeof data);
+            console.log('Data length:', Array.isArray(data) ? data.length : 'Not an array');
             
             this.markets = data.results || data;
             console.log('Processed markets:', this.markets.length);
+            
+            if (!this.markets || this.markets.length === 0) {
+                throw new Error('No markets data received from API');
+            }
             
             // Sort by volume (descending) to show most active first
             this.markets.sort((a, b) => {
@@ -91,7 +97,8 @@ class PolymarketViewer {
                 return volumeB - volumeA;
             });
 
-            // Load top 20 markets by volume on initial load
+            // Initialize for real data
+            this.allFilteredMarkets = [...this.markets];
             this.filteredMarkets = this.markets.slice(0, 20);
             this.currentPage = 1;
             this.displayMarkets();
@@ -102,6 +109,7 @@ class PolymarketViewer {
         } catch (error) {
             console.error('Error loading markets:', error);
             console.error('Error details:', error.message);
+            console.error('Error stack:', error.stack);
             
             if (error.message.includes('HTTP error')) {
                 this.showError(`API Error: ${error.message}. Loading sample data instead.`);
@@ -542,11 +550,14 @@ class PolymarketViewer {
             }
         ];
         
-        this.filteredMarkets = [...this.markets];
+        // Initialize for sample data
+        this.allFilteredMarkets = [...this.markets];
+        this.filteredMarkets = this.markets.slice(0, 20);
         this.currentPage = 1;
         this.displayMarkets();
         this.populateCategoryFilter();
         this.updateStats();
+        this.updatePagination();
         
         // Show a temporary message that sample data is loaded
         setTimeout(() => {
