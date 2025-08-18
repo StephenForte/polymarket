@@ -2,8 +2,8 @@
 
 class PolymarketViewer {
     constructor() {
-        this.apiBaseUrl = 'https://gamma-api.polymarket.com';
-        this.corsProxy = 'https://api.allorigins.win/raw?url=';
+        // Use local proxy server to avoid CORS issues
+        this.apiBaseUrl = 'http://localhost:3000/api';
         this.markets = [];
         this.filteredMarkets = [];
         this.currentPage = 1;
@@ -66,10 +66,10 @@ class PolymarketViewer {
         this.showLoading(true);
         
         try {
-            console.log('Fetching markets from:', `${this.corsProxy}${this.apiBaseUrl}/markets?closed=false&limit=100`);
+            console.log('Fetching markets from:', `${this.apiBaseUrl}/markets?closed=false&limit=100`);
             
-            // Use CORS proxy to avoid CORS issues
-            const response = await fetch(`${this.corsProxy}${this.apiBaseUrl}/markets?closed=false&limit=100`);
+            // Use local proxy server to avoid CORS issues
+            const response = await fetch(`${this.apiBaseUrl}/markets?closed=false&limit=100`);
             
             console.log('Response status:', response.status);
             console.log('Response headers:', response.headers);
@@ -367,7 +367,7 @@ class PolymarketViewer {
 
     async showMarketDetails(marketId) {
         try {
-            const response = await fetch(`${this.corsProxy}${this.apiBaseUrl}/markets/${marketId}`);
+            const response = await fetch(`${this.apiBaseUrl}/markets/${marketId}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
