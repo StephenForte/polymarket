@@ -97,7 +97,7 @@ class PolymarketViewer {
                 return volumeB - volumeA;
             });
 
-            // Initialize for real data
+            // Initialize for real data - store ALL markets for pagination
             this.allFilteredMarkets = [...this.markets];
             this.filteredMarkets = this.markets.slice(0, 20);
             this.currentPage = 1;
@@ -132,10 +132,13 @@ class PolymarketViewer {
         // Extract categories from multiple sources
         const categories = new Set();
         
-        this.markets.forEach(market => {
+        console.log('Populating categories from', this.markets.length, 'markets');
+        
+        this.markets.forEach((market, index) => {
             // Direct category field
             if (market.category) {
                 categories.add(market.category);
+                console.log(`Market ${index}: Direct category = ${market.category}`);
             }
             
             // Try to extract from events array
@@ -143,6 +146,7 @@ class PolymarketViewer {
                 market.events.forEach(event => {
                     if (event.category) {
                         categories.add(event.category);
+                        console.log(`Market ${index}: Event category = ${event.category}`);
                     }
                 });
             }
@@ -151,16 +155,32 @@ class PolymarketViewer {
             const title = (market.title || market.question || '').toLowerCase();
             if (title.includes('fed') || title.includes('rate') || title.includes('recession')) {
                 categories.add('Economics');
+                console.log(`Market ${index}: Keyword category = Economics (${title})`);
             } else if (title.includes('bitcoin') || title.includes('crypto') || title.includes('tether') || title.includes('usdt')) {
                 categories.add('Cryptocurrency');
+                console.log(`Market ${index}: Keyword category = Cryptocurrency (${title})`);
             } else if (title.includes('nuclear') || title.includes('weapon') || title.includes('iran') || title.includes('nato')) {
                 categories.add('Politics');
+                console.log(`Market ${index}: Keyword category = Politics (${title})`);
             } else if (title.includes('weed') || title.includes('marijuana')) {
                 categories.add('Policy');
+                console.log(`Market ${index}: Keyword category = Policy (${title})`);
             } else if (title.includes('taylor swift') || title.includes('swift')) {
                 categories.add('Taylor Swift');
+                console.log(`Market ${index}: Keyword category = Taylor Swift (${title})`);
+            } else if (title.includes('election') || title.includes('president') || title.includes('biden') || title.includes('trump')) {
+                categories.add('Politics');
+                console.log(`Market ${index}: Keyword category = Politics (${title})`);
+            } else if (title.includes('sports') || title.includes('football') || title.includes('basketball') || title.includes('baseball')) {
+                categories.add('Sports');
+                console.log(`Market ${index}: Keyword category = Sports (${title})`);
+            } else if (title.includes('tech') || title.includes('apple') || title.includes('google') || title.includes('tesla')) {
+                categories.add('Technology');
+                console.log(`Market ${index}: Keyword category = Technology (${title})`);
             }
         });
+        
+        console.log('All categories found:', Array.from(categories));
         
         const categoryFilter = document.getElementById('categoryFilter');
         
@@ -173,6 +193,8 @@ class PolymarketViewer {
             option.textContent = category;
             categoryFilter.appendChild(option);
         });
+        
+        console.log('Category filter populated with', categories.size, 'categories');
     }
 
         filterMarkets() {
@@ -204,6 +226,12 @@ class PolymarketViewer {
                         marketCategory = 'Policy';
                     } else if (title.includes('taylor swift') || title.includes('swift')) {
                         marketCategory = 'Taylor Swift';
+                    } else if (title.includes('election') || title.includes('president') || title.includes('biden') || title.includes('trump')) {
+                        marketCategory = 'Politics';
+                    } else if (title.includes('sports') || title.includes('football') || title.includes('basketball') || title.includes('baseball')) {
+                        marketCategory = 'Sports';
+                    } else if (title.includes('tech') || title.includes('apple') || title.includes('google') || title.includes('tesla')) {
+                        marketCategory = 'Technology';
                     }
                 }
                 
