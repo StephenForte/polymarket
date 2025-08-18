@@ -10,10 +10,7 @@ class PolymarketViewer {
         this.itemsPerPage = 20; // 4 columns × 5 rows
         this.filters = {
             search: '',
-            category: '',
-            status: '',
-            minVolume: '',
-            maxVolume: ''
+            category: ''
         };
         
         this.init();
@@ -35,21 +32,6 @@ class PolymarketViewer {
         // Filter controls
         document.getElementById('categoryFilter').addEventListener('change', (e) => {
             this.filters.category = e.target.value;
-            this.filterMarkets();
-        });
-
-        document.getElementById('statusFilter').addEventListener('change', (e) => {
-            this.filters.status = e.target.value;
-            this.filterMarkets();
-        });
-
-        document.getElementById('minVolumeFilter').addEventListener('input', (e) => {
-            this.filters.minVolume = e.target.value;
-            this.filterMarkets();
-        });
-
-        document.getElementById('maxVolumeFilter').addEventListener('input', (e) => {
-            this.filters.maxVolume = e.target.value;
             this.filterMarkets();
         });
 
@@ -180,7 +162,7 @@ class PolymarketViewer {
         });
     }
 
-    filterMarkets() {
+        filterMarkets() {
         this.filteredMarkets = this.markets.filter(market => {
             // Search filter
             if (this.filters.search) {
@@ -215,24 +197,18 @@ class PolymarketViewer {
                 }
             }
 
-            // Status filter
-            if (this.filters.status) {
-                const isActive = !market.closed;
-                if (this.filters.status === 'active' && !isActive) return false;
-                if (this.filters.status === 'closed' && isActive) return false;
-            }
-
-            // Volume filters
-            const volume = parseFloat(market.volume || 0);
-            if (this.filters.minVolume && volume < parseFloat(this.filters.minVolume)) {
-                return false;
-            }
-            if (this.filters.maxVolume && volume > parseFloat(this.filters.maxVolume)) {
-                return false;
-            }
-
             return true;
         });
+
+        // If category is selected, sort by volume and limit to top 20
+        if (this.filters.category) {
+            this.filteredMarkets.sort((a, b) => {
+                const volumeA = parseFloat(a.volume || 0);
+                const volumeB = parseFloat(b.volume || 0);
+                return volumeB - volumeA;
+            });
+            this.filteredMarkets = this.filteredMarkets.slice(0, 20);
+        }
 
         this.currentPage = 1;
         this.displayMarkets();
@@ -242,18 +218,12 @@ class PolymarketViewer {
     clearFilters() {
         this.filters = {
             search: '',
-            category: '',
-            status: '',
-            minVolume: '',
-            maxVolume: ''
+            category: ''
         };
 
         // Reset form inputs
         document.getElementById('searchInput').value = '';
         document.getElementById('categoryFilter').value = '';
-        document.getElementById('statusFilter').value = '';
-        document.getElementById('minVolumeFilter').value = '';
-        document.getElementById('maxVolumeFilter').value = '';
 
         this.filteredMarkets = [...this.markets];
         this.currentPage = 1;
