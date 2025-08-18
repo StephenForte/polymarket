@@ -1,0 +1,38 @@
+{
+  "name": "polymarket-viewer",
+  "version": "1.0.0",
+  "description": "A modern web application to view and explore Polymarket's most active prediction markets",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "node server.js",
+    "static": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "polymarket",
+    "prediction-markets",
+    "web-app",
+    "javascript",
+    "bootstrap",
+    "api"
+  ],
+  "author": "Polymarket Viewer Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/polymarket-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/polymarket-viewer/issues"
+  },
+  "homepage": "https://github.com/yourusername/polymarket-viewer#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "node-fetch": "^2.6.7"
+  }
+}

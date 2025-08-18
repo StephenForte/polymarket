@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket Viewer - Active Markets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <header class="row bg-dark text-white py-3 mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Polymarket Viewer
+                        </h1>
+                        <p class="mb-0 text-muted">Explore the most active prediction markets</p>
+                    </div>
+                    <div>
+                        <button id="refreshBtn" class="btn btn-outline-light">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Statistics Dashboard -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stats-card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-list fa-2x mb-2"></i>
+                        <h3 id="totalMarkets">0</h3>
+                        <p class="mb-0">Total Markets</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stats-card bg-success text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-filter fa-2x mb-2"></i>
+                        <h3 id="filteredMarkets">0</h3>
+                        <p class="mb-0">Filtered Markets</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stats-card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                        <h3 id="totalVolume">$0</h3>
+                        <p class="mb-0">Total Volume</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stats-card bg-info text-white">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                        <h3 id="avgVolume">$0</h3>
+                        <p class="mb-0">Avg Volume</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card filter-panel">
+                    <div class="card-header">
+                        <i class="fas fa-search me-2"></i>Search & Filters
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 mb-3">
+                                <label for="searchInput" class="form-label">Search Markets</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="searchInput" 
+                                           placeholder="Search by title or description...">
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="categoryFilter" class="form-label">Category</label>
+                                <select class="form-select" id="categoryFilter">
+                                    <option value="">All Categories</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="statusFilter" class="form-label">Status</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="minVolumeFilter" class="form-label">Min Volume</label>
+                                <input type="number" class="form-control" id="minVolumeFilter" 
+                                       placeholder="Min $">
+                            </div>
+                            <div class="col-lg-2 col-md-6 mb-3">
+                                <label for="maxVolumeFilter" class="form-label">Max Volume</label>
+                                <input type="number" class="form-control" id="maxVolumeFilter" 
+                                       placeholder="Max $">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <button id="clearFilters" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Clear All Filters
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="text-center py-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading markets...</p>
+        </div>
+
+        <!-- Markets Grid -->
+        <div class="row" id="marketsGrid">
+            <!-- Market cards will be dynamically inserted here -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Markets pagination">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span id="pageInfo" class="text-muted">Page 1 of 1</span>
+                        </div>
+                        <ul class="pagination mb-0">
+                            <li class="page-item">
+                                <button class="page-link" id="prevPage" disabled>
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </button>
+                            </li>
+                            <li class="page-item">
+                                <button class="page-link" id="nextPage" disabled>
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Details Modal -->
+    <div class="modal fade" id="marketModal" tabindex="-1" aria-labelledby="marketModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="marketModalTitle">Market Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="marketModalBody">
+                    <!-- Market details will be dynamically inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
