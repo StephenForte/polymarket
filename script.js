@@ -49,15 +49,15 @@ class PolymarketViewer {
         document.getElementById('prevPage').addEventListener('click', () => {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.displayMarkets();
+                this.filterMarkets();
             }
         });
 
         document.getElementById('nextPage').addEventListener('click', () => {
-            const maxPages = Math.ceil(this.filteredMarkets.length / this.itemsPerPage);
+            const maxPages = Math.ceil(this.allFilteredMarkets.length / this.itemsPerPage);
             if (this.currentPage < maxPages) {
                 this.currentPage++;
-                this.displayMarkets();
+                this.filterMarkets();
             }
         });
     }
@@ -91,10 +91,13 @@ class PolymarketViewer {
                 return volumeB - volumeA;
             });
 
-            this.filteredMarkets = [...this.markets];
+            // Load top 20 markets by volume on initial load
+            this.filteredMarkets = this.markets.slice(0, 20);
             this.currentPage = 1;
             this.displayMarkets();
             this.populateCategoryFilter();
+            this.updateStats();
+            this.updatePagination();
             
         } catch (error) {
             console.error('Error loading markets:', error);
@@ -146,6 +149,8 @@ class PolymarketViewer {
                 categories.add('Politics');
             } else if (title.includes('weed') || title.includes('marijuana')) {
                 categories.add('Policy');
+            } else if (title.includes('taylor swift') || title.includes('swift')) {
+                categories.add('Taylor Swift');
             }
         });
         
@@ -163,7 +168,7 @@ class PolymarketViewer {
     }
 
         filterMarkets() {
-        this.filteredMarkets = this.markets.filter(market => {
+        let filtered = this.markets.filter(market => {
             // Search filter
             if (this.filters.search) {
                 const searchTerm = this.filters.search.toLowerCase();
@@ -189,6 +194,8 @@ class PolymarketViewer {
                         marketCategory = 'Politics';
                     } else if (title.includes('weed') || title.includes('marijuana')) {
                         marketCategory = 'Policy';
+                    } else if (title.includes('taylor swift') || title.includes('swift')) {
+                        marketCategory = 'Taylor Swift';
                     }
                 }
                 
@@ -200,19 +207,23 @@ class PolymarketViewer {
             return true;
         });
 
-        // If category is selected, sort by volume and limit to top 20
-        if (this.filters.category) {
-            this.filteredMarkets.sort((a, b) => {
-                const volumeA = parseFloat(a.volume || 0);
-                const volumeB = parseFloat(b.volume || 0);
-                return volumeB - volumeA;
-            });
-            this.filteredMarkets = this.filteredMarkets.slice(0, 20);
-        }
+        // Sort by volume (highest to lowest)
+        filtered.sort((a, b) => {
+            const volumeA = parseFloat(a.volume || 0);
+            const volumeB = parseFloat(b.volume || 0);
+            return volumeB - volumeA;
+        });
 
-        this.currentPage = 1;
+        // Store all filtered results for pagination
+        this.allFilteredMarkets = filtered;
+        
+        // Get current page of results
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        this.filteredMarkets = filtered.slice(startIndex, startIndex + this.itemsPerPage);
+
         this.displayMarkets();
         this.updateStats();
+        this.updatePagination();
     }
 
     clearFilters() {
@@ -225,10 +236,13 @@ class PolymarketViewer {
         document.getElementById('searchInput').value = '';
         document.getElementById('categoryFilter').value = '';
 
-        this.filteredMarkets = [...this.markets];
+        // Reset to top 20 markets by volume
+        this.allFilteredMarkets = this.markets;
+        this.filteredMarkets = this.markets.slice(0, 20);
         this.currentPage = 1;
         this.displayMarkets();
         this.updateStats();
+        this.updatePagination();
     }
 
     displayMarkets() {
@@ -434,7 +448,7 @@ class PolymarketViewer {
     }
 
     updatePagination() {
-        const totalPages = Math.ceil(this.filteredMarkets.length / this.itemsPerPage);
+        const totalPages = Math.ceil(this.allFilteredMarkets.length / this.itemsPerPage);
         const pageInfo = document.getElementById('pageInfo');
         const prevBtn = document.getElementById('prevPage');
         const nextBtn = document.getElementById('nextPage');
