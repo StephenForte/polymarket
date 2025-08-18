@@ -309,3 +309,28 @@ body {
         background-position: -200% 0;
     }
 }
+
+/* Outcomes preview styling */
+.outcomes-preview {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    border-left: 4px solid #007bff;
+    margin-bottom: 1rem;
+}
+
+.outcome-item-small {
+    font-size: 0.9rem;
+    padding: 4px 0;
+}
+
+.outcome-name-small {
+    color: #495057;
+    font-weight: 500;
+}
+
+.outcome-price-small {
+    color: #28a745;
+    font-size: 0.85rem;
+    font-weight: 600;
+}

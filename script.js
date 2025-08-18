@@ -136,13 +136,43 @@ class PolymarketViewer {
     }
 
     populateCategoryFilter() {
-        const categories = [...new Set(this.markets.map(market => market.category).filter(Boolean))];
+        // Extract categories from multiple sources
+        const categories = new Set();
+        
+        this.markets.forEach(market => {
+            // Direct category field
+            if (market.category) {
+                categories.add(market.category);
+            }
+            
+            // Try to extract from events array
+            if (market.events && Array.isArray(market.events)) {
+                market.events.forEach(event => {
+                    if (event.category) {
+                        categories.add(event.category);
+                    }
+                });
+            }
+            
+            // Try to extract from question/title keywords
+            const title = (market.title || market.question || '').toLowerCase();
+            if (title.includes('fed') || title.includes('rate') || title.includes('recession')) {
+                categories.add('Economics');
+            } else if (title.includes('bitcoin') || title.includes('crypto') || title.includes('tether') || title.includes('usdt')) {
+                categories.add('Cryptocurrency');
+            } else if (title.includes('nuclear') || title.includes('weapon') || title.includes('iran') || title.includes('nato')) {
+                categories.add('Politics');
+            } else if (title.includes('weed') || title.includes('marijuana')) {
+                categories.add('Policy');
+            }
+        });
+        
         const categoryFilter = document.getElementById('categoryFilter');
         
         // Clear existing options except the first one
         categoryFilter.innerHTML = '<option value="">All Categories</option>';
         
-        categories.sort().forEach(category => {
+        Array.from(categories).sort().forEach(category => {
             const option = document.createElement('option');
             option.value = category;
             option.textContent = category;
@@ -163,8 +193,26 @@ class PolymarketViewer {
             }
 
             // Category filter
-            if (this.filters.category && market.category !== this.filters.category) {
-                return false;
+            if (this.filters.category) {
+                let marketCategory = market.category;
+                
+                // If no direct category, try to determine from title/keywords
+                if (!marketCategory) {
+                    const title = (market.title || market.question || '').toLowerCase();
+                    if (title.includes('fed') || title.includes('rate') || title.includes('recession')) {
+                        marketCategory = 'Economics';
+                    } else if (title.includes('bitcoin') || title.includes('crypto') || title.includes('tether') || title.includes('usdt')) {
+                        marketCategory = 'Cryptocurrency';
+                    } else if (title.includes('nuclear') || title.includes('weapon') || title.includes('iran') || title.includes('nato')) {
+                        marketCategory = 'Politics';
+                    } else if (title.includes('weed') || title.includes('marijuana')) {
+                        marketCategory = 'Policy';
+                    }
+                }
+                
+                if (marketCategory !== this.filters.category) {
+                    return false;
+                }
             }
 
             // Status filter
@@ -258,6 +306,8 @@ class PolymarketViewer {
 
         // Handle different outcome formats
         let outcomes = [];
+        let outcomePrices = [];
+        
         if (market.outcomes) {
             if (typeof market.outcomes === 'string') {
                 try {
@@ -267,6 +317,18 @@ class PolymarketViewer {
                 }
             } else if (Array.isArray(market.outcomes)) {
                 outcomes = market.outcomes;
+            }
+        }
+        
+        if (market.outcomePrices) {
+            if (typeof market.outcomePrices === 'string') {
+                try {
+                    outcomePrices = JSON.parse(market.outcomePrices);
+                } catch (e) {
+                    outcomePrices = [];
+                }
+            } else if (Array.isArray(market.outcomePrices)) {
+                outcomePrices = market.outcomePrices;
             }
         }
 
@@ -285,6 +347,22 @@ class PolymarketViewer {
                     </p>
                     
                     ${market.category ? `<span class="badge bg-secondary category-badge mb-2">${market.category}</span>` : ''}
+                    
+                    ${outcomes.length > 0 ? `
+                        <div class="outcomes-preview mb-3">
+                            <small class="text-muted d-block mb-1">Outcomes & Odds:</small>
+                            ${outcomes.map((outcome, index) => {
+                                const price = outcomePrices[index] || 'N/A';
+                                const priceDisplay = price !== 'N/A' ? `$${parseFloat(price).toFixed(2)}` : 'N/A';
+                                return `
+                                    <div class="outcome-item-small d-flex justify-content-between align-items-center mb-1">
+                                        <span class="outcome-name-small">${outcome}</span>
+                                        <span class="outcome-price-small fw-bold">${priceDisplay}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    ` : ''}
                     
                     <div class="market-stats">
                         <div class="stat-item">
