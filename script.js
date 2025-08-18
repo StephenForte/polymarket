@@ -49,7 +49,7 @@ class PolymarketViewer {
         document.getElementById('prevPage').addEventListener('click', () => {
             if (this.currentPage > 1) {
                 this.currentPage--;
-                this.filterMarkets();
+                this.updateCurrentPage();
             }
         });
 
@@ -57,7 +57,7 @@ class PolymarketViewer {
             const maxPages = Math.ceil(this.allFilteredMarkets.length / this.itemsPerPage);
             if (this.currentPage < maxPages) {
                 this.currentPage++;
-                this.filterMarkets();
+                this.updateCurrentPage();
             }
         });
     }
@@ -253,6 +253,9 @@ class PolymarketViewer {
         // Store all filtered results for pagination
         this.allFilteredMarkets = filtered;
         
+        // Reset to page 1 when filtering
+        this.currentPage = 1;
+        
         // Get current page of results
         const startIndex = (this.currentPage - 1) * this.itemsPerPage;
         this.filteredMarkets = filtered.slice(startIndex, startIndex + this.itemsPerPage);
@@ -353,7 +356,7 @@ class PolymarketViewer {
         }
 
         col.innerHTML = `
-            <div class="card market-card h-100" onclick="polymarketViewer.showMarketDetails('${market.id}')">
+            <div class="card market-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="status-indicator ${statusClass}"></span>
@@ -481,6 +484,16 @@ class PolymarketViewer {
         document.getElementById('filteredMarkets').textContent = filteredCount.toLocaleString();
         document.getElementById('totalVolume').textContent = `$${this.formatNumber(totalVolume)}`;
         document.getElementById('avgVolume').textContent = `$${this.formatNumber(avgVolume)}`;
+    }
+
+    updateCurrentPage() {
+        // Get current page of results from allFilteredMarkets
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        this.filteredMarkets = this.allFilteredMarkets.slice(startIndex, startIndex + this.itemsPerPage);
+        
+        this.displayMarkets();
+        this.updateStats();
+        this.updatePagination();
     }
 
     updatePagination() {

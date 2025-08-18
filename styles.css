@@ -9,7 +9,6 @@ body {
 .market-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     height: 100%;
-    cursor: pointer;
 }
 
 .market-card:hover {
