@@ -2,8 +2,8 @@
 
 class PolymarketViewer {
     constructor() {
-        // Use external CORS proxy for GitHub Pages deployment
-        this.corsProxy = 'https://api.allorigins.win/raw?url=';
+        // Use a more reliable CORS proxy for GitHub Pages deployment
+        this.corsProxy = 'https://api.codetabs.com/v1/proxy?quest=';
         this.apiBaseUrl = 'https://gamma-api.polymarket.com';
         this.markets = [];
         this.filteredMarkets = [];
@@ -114,13 +114,8 @@ class PolymarketViewer {
             console.error('Error details:', error.message);
             console.error('Error stack:', error.stack);
             
-            if (error.message.includes('HTTP error')) {
-                this.showError(`API Error: ${error.message}. Loading sample data instead.`);
-                this.loadSampleData();
-            } else {
-                this.showError(`Failed to load markets: ${error.message}. Loading sample data instead.`);
-                this.loadSampleData();
-            }
+            this.showError(`Failed to load markets: ${error.message}. Loading sample data instead.`);
+            this.loadSampleData();
         } finally {
             this.showLoading(false);
         }
