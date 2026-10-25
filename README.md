@@ -3,7 +3,7 @@
 A modern, responsive web application for exploring Polymarket's most active prediction markets. Built with vanilla JavaScript, Bootstrap, and featuring multiple CORS solutions for seamless API integration.
 
 ![Polymarket Viewer](https://img.shields.io/badge/Status-Active-brightgreen)
-![Node.js](https://img.shields.io/badge/Node.js-14+-green)
+![Node.js](https://img.shields.io/badge/Node.js-22.23.4%20%7C%2024.22.1%20%7C%2026.12.1-green)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 
 ## ✨ Features
@@ -97,7 +97,7 @@ For detailed information, see [CORS_SOLUTIONS.md](CORS_SOLUTIONS.md).
 ## 🛠️ Development
 
 ### Prerequisites
-- Node.js 14+ (for local proxy server)
+- Node.js 22.23.4+, 24.22.1+, or 26.12.1+ (for the local proxy server)
 - Python 3 (for static server)
 - Modern web browser
 

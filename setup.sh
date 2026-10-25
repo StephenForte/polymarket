@@ -13,6 +13,13 @@ fi
 
 echo "✅ Node.js is installed: $(node --version)"
 
+if ! node -e 'const [maj,min,pat]=process.versions.node.split(".").map(Number); const ok=(maj===22&&(min>23||(min===23&&pat>=4)))||(maj===24&&(min>22||(min===22&&pat>=1)))||(maj===26&&(min>12||(min===12&&pat>=1))); process.exit(ok?0:1)'; then
+    echo "❌ Node.js $(node --version) is outside the supported range."
+    echo "   Install Node.js 22.23.4+, 24.22.1+, or 26.12.1+."
+    echo "   Visit: https://nodejs.org/"
+    exit 1
+fi
+
 # Install dependencies
 echo ""
 echo "📦 Installing dependencies..."
